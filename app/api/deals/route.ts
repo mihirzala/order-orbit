@@ -4,7 +4,7 @@ import { z } from "zod";
 import { deals } from "@/db/schema";
 import { getDb } from "@/lib/db";
 import { badRequest, requireAuth } from "@/lib/api";
-import { isSupportedRetailer } from "@/lib/checkout/driver";
+import { isKnownRetailer } from "@/lib/checkout/driver";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return badRequest(parsed.error.issues[0]?.message ?? "Invalid deal.");
   }
-  if (!isSupportedRetailer(parsed.data.retailer)) {
+  if (!isKnownRetailer(parsed.data.retailer)) {
     return badRequest("Only amazon, walmart, and target are supported.");
   }
   const db = getDb();

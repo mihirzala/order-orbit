@@ -11,7 +11,8 @@ interface Connection {
   lastCheckedAt: string | null;
 }
 
-const RETAILERS = ["amazon", "walmart", "target"];
+const LOGIN_RETAILERS = ["amazon", "walmart", "target"];
+const DISPLAY_RETAILERS = ["amazon", "walmart", "target", "costco"];
 
 export default function RetailersClient() {
   const [rows, setRows] = useState<Connection[]>([]);
@@ -61,8 +62,9 @@ export default function RetailersClient() {
       {notice && <div className="border rounded-lg px-4 py-3 text-sm bg-neutral-100">{notice}</div>}
 
       <div className="space-y-3">
-        {RETAILERS.map((r) => {
+        {DISPLAY_RETAILERS.map((r) => {
           const conn = rows.find((c) => c.retailer === r);
+          const loginAvailable = LOGIN_RETAILERS.includes(r);
           return (
             <div key={r} className="border rounded-xl p-4 bg-white flex items-center justify-between">
               <div>
@@ -72,8 +74,10 @@ export default function RetailersClient() {
                     <span className="font-mono">{conn.usernameMasked}</span>
                     <StatusBadge status={conn.status} />
                   </div>
-                ) : (
+                ) : loginAvailable ? (
                   <div className="text-sm text-neutral-400 mt-1">Not connected</div>
+                ) : (
+                  <div className="text-sm text-neutral-400 mt-1">Login not available yet</div>
                 )}
               </div>
               {conn && (
@@ -91,7 +95,7 @@ export default function RetailersClient() {
         </p>
         <Field label="Retailer">
           <select value={retailer} onChange={(e) => setRetailer(e.target.value)} className={inputCls}>
-            {RETAILERS.map((r) => (
+            {LOGIN_RETAILERS.map((r) => (
               <option key={r} value={r}>{retailerLabel(r)}</option>
             ))}
           </select>

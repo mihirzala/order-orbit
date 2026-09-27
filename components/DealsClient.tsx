@@ -112,6 +112,7 @@ export default function DealsClient() {
           <option value="amazon">Amazon</option>
           <option value="walmart">Walmart</option>
           <option value="target">Target</option>
+          <option value="costco">Costco</option>
         </select>
         <button type="submit" disabled={busy || !query.trim()} className={btnPrimary}>
           {busy ? "Searching…" : "Search"}
@@ -148,6 +149,7 @@ export default function DealsClient() {
                 <option value="amazon">Amazon</option>
                 <option value="walmart">Walmart</option>
                 <option value="target">Target</option>
+                <option value="costco">Costco</option>
               </select>
             </Field>
           </div>

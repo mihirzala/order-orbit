@@ -5,7 +5,7 @@ Next.js app, deployable entirely on free tiers: **Vercel Hobby** (hosting),
 **Neon free** (Postgres), **GitHub Actions** (background scheduling).
 
 Tabs: **Deals** (home) · Orders · Returns · Requests · Addresses · Retailers.
-Retailers covered: **Amazon, Walmart, Target** only.
+Retailers covered: **Amazon, Walmart, Target, Costco**. Costco appears for deals only — login/checkout support is not enabled for it yet.
 
 ## Architecture
 

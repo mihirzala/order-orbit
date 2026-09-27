@@ -61,6 +61,13 @@ async function buildCheckoutContext(
     .where(eq(retailerConnections.retailer, order.retailer))
     .limit(1);
   if (!conn) {
+    if (order.retailer === "costco") {
+      return {
+        error:
+          "Costco checkout isn't available yet — logins aren't supported for Costco right now. Nothing was charged.",
+        category: "missing_credentials",
+      };
+    }
     return {
       error: `No saved ${order.retailer} login. Add it in the Retailers tab, then this order can be retried.`,
       category: "missing_credentials",

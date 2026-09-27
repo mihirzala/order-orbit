@@ -5,7 +5,7 @@ import { dealSearches } from "@/db/schema";
 import { getDb } from "@/lib/db";
 import { badRequest, requireAuth } from "@/lib/api";
 import { getDealProvider } from "@/lib/deals/provider";
-import { isSupportedRetailer } from "@/lib/checkout/driver";
+import { isKnownRetailer } from "@/lib/checkout/driver";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
   const parsed = SearchBody.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success) return badRequest("A search query is required.");
   const { query, retailer } = parsed.data;
-  if (retailer && !isSupportedRetailer(retailer)) {
+  if (retailer && !isKnownRetailer(retailer)) {
     return badRequest("Only amazon, walmart, and target are supported.");
   }
 

@@ -11,6 +11,23 @@
 
 export type RetailerName = "amazon" | "walmart" | "target";
 
+/** Retailers with login + checkout driver support. */
+export const SUPPORTED_RETAILERS: RetailerName[] = ["amazon", "walmart", "target"];
+
+/**
+ * Every retailer the app lists and filters by. Costco is listed for deals,
+ * but login/checkout support is not enabled for it yet.
+ */
+export const ALL_RETAILERS: string[] = ["amazon", "walmart", "target", "costco"];
+
+export function isSupportedRetailer(value: string): value is RetailerName {
+  return (SUPPORTED_RETAILERS as string[]).includes(value);
+}
+
+export function isKnownRetailer(value: string): boolean {
+  return ALL_RETAILERS.includes(value);
+}
+
 export interface CheckoutCredentials {
   username: string;
   password: string;
@@ -188,10 +205,4 @@ export function getDriver(retailer: string): CheckoutDriver {
     default:
       throw new Error(`Unsupported retailer: ${retailer}`);
   }
-}
-
-export const SUPPORTED_RETAILERS: RetailerName[] = ["amazon", "walmart", "target"];
-
-export function isSupportedRetailer(value: string): value is RetailerName {
-  return (SUPPORTED_RETAILERS as string[]).includes(value);
 }

@@ -39,7 +39,7 @@ export async function POST(req: Request) {
   if (!parsed.success) return badRequest("Retailer, username, and password are required.");
   const { retailer, username, password } = parsed.data;
   if (!isSupportedRetailer(retailer)) {
-    return badRequest("Only amazon, walmart, and target are supported.");
+    return badRequest("Logins are supported for amazon, walmart, and target. Costco login isn't available yet.");
   }
 
   let usernameEncrypted: string;

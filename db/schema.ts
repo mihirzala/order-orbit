@@ -26,13 +26,13 @@ export const addresses = pgTable("addresses", {
 });
 
 /**
- * Retailer connections: one row per retailer (amazon | walmart | target).
+ * Retailer connections: one row per login-supported retailer (amazon | walmart | target).
  * Credentials are encrypted at rest (AES-256-GCM) before they reach this table.
  * Only masked usernames are ever displayed.
  */
 export const retailerConnections = pgTable("retailer_connections", {
   id: uuid("id").defaultRandom().primaryKey(),
-  retailer: text("retailer").notNull().unique(), // amazon | walmart | target
+  retailer: text("retailer").notNull().unique(), // amazon | walmart | target | costco (deals only; no login yet)
   usernameEncrypted: text("username_encrypted").notNull(),
   passwordEncrypted: text("password_encrypted").notNull(),
   usernameMasked: text("username_masked").notNull(), // safe to display
@@ -49,7 +49,7 @@ export const retailerConnections = pgTable("retailer_connections", {
 export const dealSearches = pgTable("deal_searches", {
   id: uuid("id").defaultRandom().primaryKey(),
   query: text("query").notNull(),
-  retailer: text("retailer"), // null = all retailers (amazon | walmart | target)
+  retailer: text("retailer"), // null = all retailers (amazon | walmart | target | costco (deals only; no login yet))
   status: text("status").notNull().default("pending"), // pending | ready | needs_attention
   note: text("note"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
@@ -68,7 +68,7 @@ export const deals = pgTable("deals", {
   title: text("title").notNull(),
   price: numeric("price", { precision: 12, scale: 2 }).notNull(),
   currency: text("currency").notNull().default("USD"),
-  retailer: text("retailer").notNull(), // amazon | walmart | target
+  retailer: text("retailer").notNull(), // amazon | walmart | target | costco (deals only; no login yet)
   imageUrl: text("image_url"),
   productUrl: text("product_url").notNull(),
   availability: text("availability").notNull().default("available"), // available | sold_out | unknown
