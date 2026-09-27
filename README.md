@@ -101,39 +101,44 @@ unlimited Actions minutes.
 
 ### 2. GitHub repo
 
-1. Create a **public** repo, push `main`.
+1. Create a **public** repo, push `main`. (Public keeps the scheduled
+   background worker free — no secrets live in the code.)
 2. Repo Settings → Secrets and variables → Actions → add:
    - `APP_URL` = your production URL, e.g. `https://your-app.vercel.app`
    - `CRON_SECRET` = long random token (generate: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`)
-3. The workflow (`.github/workflows/cron.yml`) runs every 5 minutes plus a
-   manual "Run workflow" button. Point it at the preview URL while testing.
+3. The workflow (`.github/workflows/cron.yml`) is **not for deployment** —
+   Vercel handles that. It wakes up every 5 minutes and tells the production
+   app to process approved orders and returns (`POST /api/cron/process`).
+   Without it, Buy orders would sit in "approved" forever. It also has a
+   manual "Run workflow" button.
 
-### 3. Vercel
+### 3. Vercel (production only)
 
 1. Import the repo. Framework preset: Next.js. No build changes needed.
-2. Add environment variables (see table below).
-3. Deploy `main` → Production. Create a `dev` branch → every push gets a
-   Preview deployment (the test environment).
+2. Add environment variables (see table below) to the **Production**
+   environment.
+3. Deploy `main` → Production. There is no Preview/test deployment —
+   testing happens on localhost (see below).
 
 ### Test vs prod mapping
 
-| Branch | Vercel environment | Database | Cron target |
+| Where | Purpose | Database | Notes |
 |---|---|---|---|
-| `dev` | Preview (test) | Separate Neon branch/database recommended | Point the workflow at the preview URL, or trigger manually |
-| `main` | Production (prod) | Neon primary database | `APP_URL` secret = production URL |
+| `localhost:3000` (`npm run dev`) | Test | Local Postgres or a separate Neon database | Set `APP_URL=http://localhost:3000` in `.env.local` |
+| Vercel Production (`main` branch) | Prod | Neon primary database | GitHub workflow targets this URL every 5 min |
 
-Use a separate Neon database (or Neon branch) for Preview so test orders and
-retailer logins never touch prod data.
+Use a different database for localhost testing so test orders and retailer
+logins never touch prod data.
 
 ## Environment variables
 
-| Variable | Required | Vercel environment | Purpose |
+| Variable | Required | Where | Purpose |
 |---|---|---|---|
-| `DATABASE_URL` | Yes | Production + Preview (use different DBs) | Neon Postgres connection string |
-| `APP_PASSWORD` | Yes | Production + Preview (can differ) | App login gate password |
-| `ENCRYPTION_KEY` | Yes | Production + Preview (keep stable per env) | 32-byte AES-256-GCM key, hex (64 chars) or base64. Losing it = re-enter retailer logins |
-| `CRON_SECRET` | Yes | Production + Preview | Bearer token for `/api/cron/process`; must match GitHub secret |
-| `APP_URL` | Yes | Production + Preview | Public app URL (logout redirect, cron target) |
+| `DATABASE_URL` | Yes | Vercel Production + `.env.local` (different DBs) | Neon Postgres connection string |
+| `APP_PASSWORD` | Yes | Vercel Production + `.env.local` (can differ) | App login gate password |
+| `ENCRYPTION_KEY` | Yes | Vercel Production + `.env.local` (keep stable per env) | 32-byte AES-256-GCM key, hex (64 chars) or base64. Losing it = re-enter retailer logins |
+| `CRON_SECRET` | Yes | Vercel Production (must match GitHub secret) | Bearer token for `/api/cron/process` |
+| `APP_URL` | Yes | Vercel Production | Public prod URL (logout redirect, cron target) |
 
 GitHub repo secrets needed: `APP_URL`, `CRON_SECRET`.
 
