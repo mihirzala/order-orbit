@@ -13,8 +13,7 @@ build/
 .env.test.local
 .env.production.local
 
-# drizzle
-drizzle/meta/
+# drizzle - keep meta/ (journal needed by scripts/migrate.mjs); ignore nothing here
 
 # system
 .DS_Store
